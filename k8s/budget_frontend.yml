@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: budget-frontend
+spec:
+  type: NodePort
+  selector:
+    app: budget-frontend
+  ports:
+    - port: 80
+      nodePort: 30080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: budget-frontend
+spec:
+  selector:
+    matchLabels:
+      app: budget-frontend
+  template:
+    metadata:
+      labels:
+        app: budget-frontend
+    spec:
+      containers:
+        - name: budget-frontend
+          image: agustin3a/budget_frontend:1.0.0-local
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+          ports:
+            - containerPort: 80

@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: budget-api
+spec:
+  type: NodePort
+  selector:
+    app: budget-api
+  ports:
+  - port: 1337
+    nodePort: 31337
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: budget-api
+spec:
+  selector:
+    matchLabels:
+      app: budget-api
+  template:
+    metadata:
+      labels:
+        app: budget-api
+    spec:
+      containers:
+      - name: budget-api
+        image: agustin3a/budget_api:1.0.0
+        env:
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: password
+          - name: DB_HOST
+            value: postgres
+          - name: DB_USERNAME
+            value: postgres
+          - name: DB_DATABASE
+            value: budget
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 1337
